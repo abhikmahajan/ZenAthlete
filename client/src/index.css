@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.reset-tw, .reset-tw *{
+  all: revert !important
+}
