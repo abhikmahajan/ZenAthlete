@@ -13,6 +13,7 @@
   "dependencies": {
     "@clerk/express": "^1.7.53",
     "@google/genai": "^1.30.0",
+    "@supabase/supabase-js": "^2.86.2",
     "axios": "^1.13.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",

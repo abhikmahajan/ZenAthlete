@@ -1,9 +1,15 @@
-import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
-import axios from "axios";
-
-
 dotenv.config();
+
+import { GoogleGenAI } from "@google/genai";
+
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'https://gvrzozbenqpsoqpoumkx.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey) 
+
+
 
 const ai = new GoogleGenAI({});
 
@@ -14,11 +20,11 @@ export const personalPlans = async (req, res) =>{
 
 
   try{
+    const {userId} = req.auth();
     const {prompt} = req.body;
-    console.log('[AI] Received prompt:', prompt);
     const plan = req.plan;
 
-    if(plan === 'freePlan'){
+    if(plan === 'free'){
         return res.json({success: false, message: "This feature is only available for premium subscriptions."})
     }
 
@@ -27,12 +33,19 @@ export const personalPlans = async (req, res) =>{
     contents: prompt,
   });
 
-    // SDK can return different structures; attempt to extract content
-    console.log('[AI] Raw response:', response);
-    const textContent = response.text || (response.candidates && response.candidates[0] && response.candidates[0].content && response.candidates[0].content[0] && response.candidates[0].content[0].text) || JSON.stringify(response);
+   const textContent = response.text;
+ 
+    const { error } = await supabase
+  .from('creations')
+  .insert( 
+    {user_id: userId, prompt: prompt, type: 'personal-plan',content: response.text});
+    if (error) {
+      console.log('Error inserting creation:', error.message);
+    }
+    
+   
 
     res.json({success: true, content: textContent});
-    console.log('[AI] Sent text content:', textContent);
 } catch(error){
     console.log(error.message)
     res.json({success: false, message: error.message})
@@ -47,11 +60,11 @@ export const nutrition = async (req, res) =>{
 
 
   try{
+    const {userId} = req.auth();
     const {prompt} = req.body;
-    console.log('[AI] Received prompt:', prompt);
     const plan = req.plan;
 
-    if(plan === 'freePlan'){
+    if(plan === 'free'){
         return res.json({success: false, message: "This feature is only available for premium subscriptions."})
     }
 
@@ -60,11 +73,18 @@ export const nutrition = async (req, res) =>{
     contents: prompt,
   });
 
-  console.log('[AI] Raw response:', response);
-  const textContent = response.text || (response.candidates && response.candidates[0] && response.candidates[0].content && response.candidates[0].content[0] && response.candidates[0].content[0].text) || JSON.stringify(response);
+  const textContent = response.text;
+
+
+  const { error } = await supabase
+  .from('creations')
+  .insert(
+    {user_id: userId, prompt: prompt, type: 'nutrition',content: response.text});
+    if (error) {
+      console.log('Error inserting creation:', error.message);
+    }
 
   res.json({success: true, content: textContent});
-  console.log('[AI] Sent text content:', textContent);
 } catch(error){
     console.log(error.message)
     res.json({success: false, message: error.message})

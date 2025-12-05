@@ -12,7 +12,7 @@ export default function Navbar() {
     <>
     <div className='fixed top-0 z-5 w-full backdrop-blur-2xl'>
     <div className='flex  h-16 text-white mx-auto justify-between items-center px-10'>
-      <div className='flex items-center gap-4 px-6  font-semibold text-2xl'>
+      <div className='flex gap-4 px-6  font-semibold text-2xl'>
         <img src={logo} alt='Logo' className='h-10 w-10'/>
         <h1>ZenAthlete</h1>
       </div>

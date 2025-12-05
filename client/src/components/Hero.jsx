@@ -2,8 +2,14 @@ import React from 'react'
 import user_group from '../assets/user_group.png'
 import image from '../assets/zen_landing.jpg'
 import { ArrowRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const Hero = () => {
+
+  const navigate = useNavigate();
+
+
+
   return (
     <div className='transition-transform duration-300 ease-in-out'>
         <div className='min-h-screen absolute  w-full'>
@@ -14,7 +20,7 @@ const Hero = () => {
       <p className='mb-14 text-xl text-gray-300 '>Your personalized fitness companion with tailored training schedules.</p>
       
       <div className='flex gap-4'>
-        <button className='bg-white text-black transition-transform border flex text-center gap-2 justify-center p-3 rounded-2xl px-6 hover:scale-105'>Start creating now</button>
+        <button onClick={() => navigate('/gym')} className='bg-white text-black transition-transform border flex text-center gap-2 justify-center p-3 rounded-2xl px-6 hover:scale-105 cursor-pointer'>Start creating now</button>
         <button className='bg-black text-white transition-transform border flex text-center gap-2 justify-center p-3 rounded-2xl px-6 hover:scale-105'>Watch Demo</button>
  
       </div>

@@ -31,13 +31,12 @@ const Nutrition = () => {
     setLoading(true);
     try{
       const {data} = await axios.post('/api/personalised-plans/nutrition', {
-        prompt: `Create a personalized 4-week nutritional plan for a ${age}-year-old ${gender}, ${height}cm, ${weight}kg, aiming to build ${goalPhysique}. Provide daily calorie targets, a macronutrient split (carbs/protein/fats), and sample breakfast, lunch, and dinner meals. Prioritize whole food sources and include alternatives for vegetarian, vegan, and gluten-free options. User preferences: breakfast: ${breakfast} | lunch: ${lunch} | dinner: ${dinner}`
+        prompt: `Create a personalized 4-week nutritional plan for a ${age}-year-old ${gender}, ${height}cm, ${weight}kg, aiming to build ${goalPhysique}. Provide daily calorie targets, a macronutrient split (carbs/protein/fats), and sample breakfast, lunch, and dinner meals. Prioritize whole food sources and include alternatives for vegetarian, vegan, and gluten-free options. User preferences: breakfast: ${breakfast} | lunch: ${lunch} | dinner: ${dinner}. Keep it concise.`
       });
       console.log('[Client] /api/personalised-plans/nutrition response:', data);
       if(data && data.success){
         setContent(data.content);
       } else {
-        // Not a success, but keep content unchanged; log for debugging
         console.warn('[Client] personal plans returned success:false or invalid response', data)
         setContent('');
       }

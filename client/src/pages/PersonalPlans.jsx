@@ -29,7 +29,7 @@ const PersonalPlans = () => {
     setLoading(true);
     try{
       const {data} = await axios.post('/api/personalised-plans', {
-        prompt: `Create a personalized 4-week workout plan for a ${age}-year-old ${gender}, ${height}cm, ${weight}kg, aiming to build ${goalPhysique}. Include exercise types, frequency, and intensity but not diet plan.`
+        prompt: `Create a personalized 4-week workout plan for a ${age}-year-old ${gender}, ${height}cm, ${weight}kg, aiming to build ${goalPhysique}. Include exercise types, frequency, and intensity but not diet plan. Keep it concise.`,
       });
       console.log('[Client] /api/personalised-plans response:', data);
       if(data && data.success){

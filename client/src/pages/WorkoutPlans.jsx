@@ -152,7 +152,7 @@ return (
         <p className='text-slate-400 mb-8'>Select a workout plan to get started:</p>
         <div className='grid grid-cols-2 gap-5'>
             {Object.entries(workoutPlans).map(([key, plan]) => (
-                <button key={key} onClick={() => startPlan(key)} className='p-4 bg-slate-800 hover:bg-slate-700 rounded-lg'>
+                <button key={key} onClick={() => startPlan(key)} className='p-4 bg-slate-800 hover:bg-slate-700 border border-gray-300 rounded-lg'>
                     <div className='flex justify-center items-center gap-6 px-10'>
                     <div>
                         <h3 className='text-xl font-bold'>{plan.name}</h3>
