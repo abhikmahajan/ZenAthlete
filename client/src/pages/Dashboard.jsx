@@ -14,21 +14,29 @@ const Dashboard = () => {
 
 
    const [creations, setCreations] = useState([])
+   const [workoutStats, setWorkoutStats] = useState({ totalWorkouts: 0, totalCalories: 0 })
    const {getToken} = useAuth()
    
 
 const getDashboardData = async () => {
     try {
-      const {data} = await axios.get('/api/user/creations', {
-        headers: { Authorization: `Bearer ${await getToken()}` }
-      })
-
-      if(data.success){
-        setCreations(data.creations)
+      // Fetch creations
+      const creationsResponse = await axios.get('/api/user/creations')
+      if(creationsResponse.data.success){
+        setCreations(creationsResponse.data.creations)
       }else{
-        toast.error(data.message)
+        toast.error(creationsResponse.data.message)
+      }
+
+      // Fetch workout stats
+      const statsResponse = await axios.get('/api/user/workout-stats')
+      if(statsResponse.data.success){
+        setWorkoutStats(statsResponse.data.stats)
+      }else{
+        toast.error(statsResponse.data.message)
       }
     } catch (error) {
+      console.error('[Dashboard] Error fetching data:', error);
       toast.error(error.message)
     }
   }
@@ -55,7 +63,7 @@ const getDashboardData = async () => {
             <div className="bg-slate-700 rounded-lg p-6 text-white border border-gray-300 flex justify-between items-center">
               <div>
                 <p className="text-slate-400 text-sm mb-2">Calories Burned</p>
-                <p className="text-2xl font-bold">1,245 kcal</p>
+                <p className="text-2xl font-bold">{workoutStats.totalCalories.toLocaleString()} kcal</p>
               </div>
               <div className='w-10 h-10 rounded-lg bg-linear-to-br from-[#3588F2] to-[#0BB0D7] text-white flex justify-center items-center'>
             <SquareActivity className='w-5 text-white'/>
@@ -67,7 +75,7 @@ const getDashboardData = async () => {
             <div className="bg-slate-700 rounded-lg p-6 text-white border border-gray-300 flex justify-between items-center">
               <div>
                 <p className="text-slate-400 text-sm mb-2">Workouts Completed</p>
-                <p className="text-2xl font-bold">5</p>
+                <p className="text-2xl font-bold">{workoutStats.totalWorkouts}</p>
               </div>
               <div className='w-10 h-10 rounded-lg bg-linear-to-br from-[#FF61C5] to-[#9E53EE] text-white flex justify-center items-center'>
             <Check className='w-5 text-white'/>
