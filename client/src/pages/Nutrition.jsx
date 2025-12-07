@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from 'axios';
 import Markdown from 'react-markdown';
 import { Edit, Sparkles } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 // Send cookies for Clerk auth (cross-site dev origin -> server cors credentials)
@@ -37,11 +38,11 @@ const Nutrition = () => {
       if(data && data.success){
         setContent(data.content);
       } else {
-        console.warn('[Client] personal plans returned success:false or invalid response', data)
+        toast.error(data.message);
         setContent('');
       }
     }catch(error){
-      console.error(error);
+      toast.error(error.message);
     }
     setLoading(false);
   }

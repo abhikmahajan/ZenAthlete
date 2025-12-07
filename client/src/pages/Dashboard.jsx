@@ -1,16 +1,42 @@
 import { Check, Gem, Sparkles, SquareActivity } from 'lucide-react';
 import React from 'react'
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import CreationItem from '../components/CreationItem';
 import { useNavigate } from 'react-router-dom'
-import { Protect } from '@clerk/clerk-react';
+import { Protect, useAuth } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+axios.defaults.withCredentials = true;
 
 const Dashboard = () => {
 
- const plans = [
-    { name: 'Full Body Workout', status: 'Completed' },
-    { name: 'Keto Diet Plan', status: 'In Progress' },
-    { name: 'Yoga Routine', status: 'Pending' },
-    {name: 'HIIT Training', status: 'Completed'}
-  ];
+
+   const [creations, setCreations] = useState([])
+   const {getToken} = useAuth()
+   
+
+const getDashboardData = async () => {
+    try {
+      const {data} = await axios.get('/api/user/creations', {
+        headers: { Authorization: `Bearer ${await getToken()}` }
+      })
+
+      if(data.success){
+        setCreations(data.creations)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+   useEffect(()=>{
+      getDashboardData()
+    },[])
+
 
   const navigate = useNavigate();
 
@@ -52,7 +78,7 @@ const Dashboard = () => {
             <div className="bg-slate-700 rounded-lg p-6 text-white border border-gray-300 flex justify-between items-center">
               <div>
                 <p className="text-slate-400 text-sm mb-2">Created Plans and Diets</p>
-                <p className="text-2xl font-bold">2</p>
+                <p className="text-2xl font-bold">{creations.length}</p>
               </div>
               <div className='w-10 h-10 rounded-lg bg-linear-to-br from-[#3588F2] to-[#0BB0D7] text-white flex justify-center items-center'>
             <Sparkles className='w-5 text-white'/>
@@ -79,9 +105,9 @@ const Dashboard = () => {
             <div className="lg:col-span-2 bg-slate-700 rounded-lg p-6 text-white h-full border border-gray-300">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">Created Plans <span className='text-lg text-zinc-300'>(Workout and Nutrition)</span></h2>
               <div className="space-y-3">
-                {plans.map((plan, index) => (
-                  <div key={index} className="flex justify-between items-center bg-slate-800 p-4 rounded-lg border border-gray-600">{plan.name}
-                    </div>))}
+                {
+        creations.map((item)=> <CreationItem key={item.id} item={item} />)
+      }
 
               </div>
             </div>
