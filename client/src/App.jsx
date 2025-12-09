@@ -9,6 +9,7 @@ import Nutrition from './pages/Nutrition'
 import WorkoutSplit from './pages/WorkoutSplit'
 import Coach from './pages/Coach'
 import PersonalPlans from './pages/PersonalPlans'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path='personalised-plans' element={<PersonalPlans/>} />
           <Route path='nutrition' element={<Nutrition/>} />
           <Route path='coach-support' element={<Coach/>} />
+          <Route path='admin' element={<Admin/>} />
         </Route>
       </Routes>
     

@@ -3,6 +3,7 @@ import cors from 'cors';
 import { clerkMiddleware, requireAuth } from '@clerk/express';
 import aiRouter from './routes/aiRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import supportRouter from './routes/supportRoutes.js';
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -26,8 +27,10 @@ app.get('/', (req, res) => {
 });
 
 
+
 app.use('/api/personalised-plans', requireAuth(), aiRouter);
 app.use('/api/user', requireAuth(), userRouter);
+app.use("/api/support",requireAuth(), supportRouter);
 
 
 app.listen(PORT, () => {
