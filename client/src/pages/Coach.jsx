@@ -3,16 +3,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { createClient } from '@supabase/supabase-js';
 import { useUser } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 // send cookies for cross-site auth
 axios.defaults.withCredentials = true;
 
 const SUPABASE_URL = 'https://gvrzozbenqpsoqpoumkx.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY || '';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY ;
 
-if (!SUPABASE_KEY) {
-  console.warn('VITE_SUPABASE_ANON_KEY is not set. Realtime and auth may fail.');
-}
+
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -69,7 +68,7 @@ const Coach = ({ userId }) => {
         message: text
       });
     } catch (err) {
-      console.error("Failed to send user message:", err);
+      toast.error("Failed to send user message:", err.message);
     }
     setText("");
   };
@@ -84,9 +83,9 @@ const Coach = ({ userId }) => {
       </div>
 
 
-      <div className='bg-white min-h-100'>
+      <div className='bg-slate-700 border border-gray-300 rounded p-5 overflow-y-scroll min-h-100'>
         {messages.map(m => (
-          <p key={m.id} style={{ color: m.sender === "coach" ? "blue" : "black", margin: 6 }}>
+          <p key={m.id} style={{ color: m.sender === "coach" ? "white" : "yellow", margin: 6 }}>
             <b>{m.sender}:</b> {m.message}
           </p>
         ))}
@@ -106,7 +105,7 @@ const Coach = ({ userId }) => {
           onChange={e => setText(e.target.value)}
           style={{ flex: 1, padding: '8px 10px', borderRadius: 6 }}
         />
-        <button type="submit" disabled={!text.trim()} style={{ padding: '8px 12px' }}>
+        <button type="submit" disabled={!text.trim()} className='px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer'>
           Send
         </button>
       </form>

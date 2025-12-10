@@ -4,25 +4,17 @@ dotenv.config();
 
 import { createClient } from "@supabase/supabase-js";
 
-// Use the same Supabase URL as other controllers. Fall back to the project DB URL if env var missing.
-const supabaseUrl = process.env.SUPABASE_URL || 'https://gvrzozbenqpsoqpoumkx.supabase.co';
-// Prefer a service role key on the server, otherwise fall back to SUPABASE_KEY if set.
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_KEY || '';
+const supabaseUrl = 'https://gvrzozbenqpsoqpoumkx.supabase.co';
+const supabaseKey = process.env.SUPABASE_KEY ;
 
-if (!supabaseUrl) {
-  // eslint-disable-next-line no-console
-  console.error('SUPABASE_URL is not set. Please add it to your server .env');
-}
-if (!supabaseKey) {
-  // eslint-disable-next-line no-console
-  console.warn('No Supabase key found (SUPABASE_SERVICE_ROLE or SUPABASE_KEY). Some operations may fail.');
-}
+
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// USER sends message
+
 export const userSendMessage = async (req, res) => {
   
+  try{
   const {userId} = req.auth();
   const {message} = req.body;
   const plan = req.plan;
@@ -40,8 +32,15 @@ export const userSendMessage = async (req, res) => {
     })
     .select("*");
 
-  if (error) return res.status(400).json({ error });
+  if (error){
+    console.log('Error inserting creation:', error.message);
+  }
   res.json(data[0]);
+
+  } catch(error){
+    console.log(error.message)
+    res.json({success: false, message: error.message})
+  }
 };
 
 // COACH sends message
@@ -65,6 +64,11 @@ export const coachSendMessage = async (req, res) => {
 // Get all chat messages of a single user
 export const getUserChat = async (req, res) => {
   const { userId } = req.auth();
+  const plan = req.plan;
+
+    if(plan === 'free'){
+        return res.json({success: false, message: "This feature is only available for premium subscriptions."})
+    }
 
   const { data, error } = await supabase
     .from("coach_support_messages")
