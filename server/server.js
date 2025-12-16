@@ -31,4 +31,13 @@ app.use('/api/personalised-plans', requireAuth(), aiRouter);
 app.use('/api/user', requireAuth(), userRouter);
 app.use("/api/support",requireAuth(), supportRouter);
 
+// Basic error handler to return JSON and log server errors
+app.use((err, req, res, next) => {
+  console.error('[Server Error]', err);
+  res.status(500).json({ success: false, message: err.message || 'Internal Server Error' });
+});
+
+// Export the Express app so Vercel's Node runtime can use it as a serverless handler
+export default app;
+
 
