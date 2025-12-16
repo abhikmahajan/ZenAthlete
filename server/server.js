@@ -11,7 +11,6 @@ dotenv.config();
 
 const app = express();
   
-// Allow client origin and credentials so Clerk auth cookies can be sent cross-site
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(express.json());
