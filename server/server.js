@@ -33,6 +33,3 @@ app.use('/api/user', requireAuth(), userRouter);
 app.use("/api/support",requireAuth(), supportRouter);
 
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
