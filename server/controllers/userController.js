@@ -13,29 +13,20 @@ export const getUserCreations = async (req, res) => {
     try {
         const userId = req.auth.userId;
         
-        if (!userId) {
-            console.error('[getUserCreations] No userId found in req.auth');
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
-        }
-
-        console.log('[getUserCreations] Fetching creations for userId:', userId);
-        
     const { data, error } = await supabase
   .from('creations')
   .select('*')
   .eq('user_id', userId)
   .order('created_at', { ascending: false });
-  
   if(error){
-    console.log('[getUserCreations] Supabase error:', error.message);
+    console.log('Error fetching creations:', error.message);
     return res.json({ success: false, message: error.message });
   }
-  
-        console.log('[getUserCreations] Successfully fetched', data?.length || 0, 'creations');
+        
+    
         res.json({ success: true, creations: data || [] });
     } catch (error) {
-        console.error('[getUserCreations] Catch error:', error.message, error);
-        res.status(500).json({ success: false, message: error.message });
+        res.json({ success: false, message: error.message });
     }
 }
 
@@ -77,12 +68,6 @@ export const getWorkoutStats = async (req, res) => {
     try {
         const userId = req.auth.userId;
 
-        if (!userId) {
-            console.error('[getWorkoutStats] No userId found');
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
-        }
-
-        console.log('[getWorkoutStats] Fetching stats for userId:', userId);
 
         // Fetch all workouts for this user and aggregate the data
         const { data: workouts, error } = await supabase
@@ -91,7 +76,7 @@ export const getWorkoutStats = async (req, res) => {
             .eq('user_id', userId);
 
         if (error) {
-            console.log('[getWorkoutStats] Supabase error:', error.message);
+            console.log('Error fetching workouts:', error.message);
             return res.json({ success: false, message: error.message });
         }
 
@@ -106,7 +91,6 @@ export const getWorkoutStats = async (req, res) => {
             });
         }
 
-        console.log('[getWorkoutStats] Returning stats - workouts:', totalWorkouts, 'calories:', totalCalories);
         
         res.json({ 
             success: true, 
@@ -116,8 +100,9 @@ export const getWorkoutStats = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('[getWorkoutStats] Catch error:', error.message, error);
-        res.status(500).json({ success: false, message: error.message });
+        console.log('[getWorkoutStats] Error:', error.message);
+        res.json({ success: false, message: error.message });
     }
+}
 
 
