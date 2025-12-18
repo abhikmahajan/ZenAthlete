@@ -15,18 +15,27 @@ const Dashboard = () => {
 
    const [creations, setCreations] = useState([])
    const [workoutStats, setWorkoutStats] = useState({ totalWorkouts: 0, totalCalories: 0 })
+   const [isLoading, setIsLoading] = useState(true);
    const {getToken} = useAuth()
    
 
 const getDashboardData = async () => {
     try {
       const token = await getToken();
+      
+      if (!token) {
+        console.error('[Dashboard] No token available');
+        toast.error('Authentication failed. Please login again.');
+        return;
+      }
+
       const headers = {
         Authorization: `Bearer ${token}`,
       };
 
       // Fetch creations
       const creationsResponse = await axios.get('/api/user/creations', { headers })
+      console.log('[Dashboard] Creations response:', creationsResponse.data);
       if(creationsResponse.data.success){
         setCreations(creationsResponse.data.creations)
       }else{
@@ -36,6 +45,7 @@ const getDashboardData = async () => {
 
       // Fetch workout stats
       const statsResponse = await axios.get('/api/user/workout-stats', { headers })
+      console.log('[Dashboard] Stats response:', statsResponse.data);
       if(statsResponse.data.success){
         setWorkoutStats(statsResponse.data.stats)
       }else{
@@ -43,14 +53,17 @@ const getDashboardData = async () => {
         toast.error('Failed to fetch workout stats');
       }
     } catch (error) {
-      console.error('[Dashboard] Error fetching data:', error.response?.data || error.message);
-      toast.error(error.response?.data?.message || 'Failed to load dashboard data')
+      console.error('[Dashboard] Error fetching data:', error);
+      console.error('[Dashboard] Error response:', error.response?.data);
+      toast.error(error.response?.data?.message || error.message || 'Failed to load dashboard data')
+    } finally {
+      setIsLoading(false);
     }
   }
 
    useEffect(()=>{
       getDashboardData()
-    },[])
+    },[getToken])
 
 
   const navigate = useNavigate();
