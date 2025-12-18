@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from '@clerk/clerk-react';
 import { createClient } from '@supabase/supabase-js';
 
 axios.defaults.withCredentials = true;
@@ -14,6 +15,7 @@ if (!SUPABASE_KEY) {
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export default function CoachDashboard() {
+  const { getToken } = useAuth();
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -21,18 +23,38 @@ export default function CoachDashboard() {
 
   // Load users
   useEffect(() => {
-    axios.get("/api/support/users")
-      .then(res => setUsers(res.data))
-      .catch(err => console.error("Failed to load support users:", err));
-  }, []);
+    const loadUsers = async () => {
+      try {
+        const token = await getToken();
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.get("/api/support/users", { headers });
+        setUsers(res.data);
+      } catch (err) {
+        console.error("Failed to load support users:", err.response?.data || err.message);
+      }
+    };
+    loadUsers();
+  }, [getToken]);
 
   // Load chat of selected user
   useEffect(() => {
     if (!currentUser) return;
-    axios.get(`/api/support/chat/${currentUser}`)
-      .then(res => setMessages(res.data))
-      .catch(err => console.error("Failed to load chat:", err));
-  }, [currentUser]);
+    const loadChat = async () => {
+      try {
+        const token = await getToken();
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.get(`/api/support/chat/${currentUser}`, { headers });
+        setMessages(res.data);
+      } catch (err) {
+        console.error("Failed to load chat:", err.response?.data || err.message);
+      }
+    };
+    loadChat();
+  }, [currentUser, getToken]);
 
   // Realtime updates
   useEffect(() => {
@@ -56,12 +78,16 @@ export default function CoachDashboard() {
 
   const sendMessage = async () => {
     try {
+      const token = await getToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
       await axios.post("/api/support/coach", {
         userId: currentUser,
         message: text
-      });
+      }, { headers });
     } catch (err) {
-      console.error("Failed to send coach message:", err);
+      console.error("Failed to send coach message:", err.response?.data || err.message);
     }
     setText("");
   };

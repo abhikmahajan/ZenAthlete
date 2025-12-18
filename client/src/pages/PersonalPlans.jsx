@@ -4,14 +4,14 @@ import Markdown from 'react-markdown';
 import axios from 'axios';
 import { Edit, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/clerk-react';
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 // Send cookies for Clerk auth (cross-site dev origin -> server cors credentials)
 axios.defaults.withCredentials = true;
 
 const PersonalPlans = () => {
-
-  const physiqueType =[
+  const { getToken } = useAuth();
     'Lean & Athletic',
     'Aesthetic / Bodybuilder Lean',
     'Bulked & Strong Physique',
@@ -26,12 +26,17 @@ const PersonalPlans = () => {
 
 
   const submitted = async (e) =>{
+  const submitted = async (e) =>{
     e.preventDefault();
     setLoading(true);
     try{
+      const token = await getToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
       const {data} = await axios.post('/api/personalised-plans', {
         prompt: `Create a personalized 4-week workout plan for a ${age}-year-old ${gender}, ${height}cm, ${weight}kg, aiming to build ${goalPhysique}. Include exercise types, frequency, and intensity but not diet plan. Keep it concise.`,
-      });
+      }, { headers });
       console.log('[Client] /api/personalised-plans response:', data);
       if(data && data.success){
         setContent(data.content);
@@ -40,10 +45,9 @@ const PersonalPlans = () => {
         setContent('');
       }
     }catch(error){
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
     setLoading(false);
-  }
 
   
   const [loading, setLoading] = useState(false);

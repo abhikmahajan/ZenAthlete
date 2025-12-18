@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/clerk-react';
 import fullbody from '../assets/plans/full_body.jpg';
 import chest from '../assets/plans/chest.jpg';
 import arms from '../assets/plans/arms.jpeg';
@@ -13,6 +14,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 axios.defaults.withCredentials = true;
 
 const WorkoutPlans = () => {
+const { getToken } = useAuth();
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
 const [completedExercises, setCompletedExercises] = useState([]);
@@ -151,6 +153,10 @@ const completeExercise = () => {
 
 const saveWorkoutCompletion = async (planExercises) => {
     try {
+        const token = await getToken();
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
         const planName = workoutPlans[selectedPlan].name;
         const workoutDurationSeconds = Math.round((Date.now() - workoutStartTime) / 1000);
         
@@ -160,7 +166,7 @@ const saveWorkoutCompletion = async (planExercises) => {
             workoutPlanName: planName,
             totalCalories: totalCaloriesBurned,
             duration: workoutDurationSeconds
-        });
+        }, { headers });
 
         if (data.success) {
             toast.success('Workout saved! 🎉');

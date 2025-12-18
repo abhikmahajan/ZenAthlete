@@ -4,12 +4,14 @@ import axios from 'axios';
 import Markdown from 'react-markdown';
 import { Edit, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/clerk-react';
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 // Send cookies for Clerk auth (cross-site dev origin -> server cors credentials)
 axios.defaults.withCredentials = true;
 
 const Nutrition = () => {
+  const { getToken } = useAuth();
   const physiqueType =[
     'Lean & Athletic',
     'Aesthetic / Bodybuilder Lean',
@@ -31,9 +33,13 @@ const Nutrition = () => {
     e.preventDefault();
     setLoading(true);
     try{
+      const token = await getToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
       const {data} = await axios.post('/api/personalised-plans/nutrition', {
         prompt: `Create a personalized 4-week nutritional plan for a ${age}-year-old ${gender}, ${height}cm, ${weight}kg, aiming to build ${goalPhysique}. Provide daily calorie targets, a macronutrient split (carbs/protein/fats), and sample breakfast, lunch, and dinner meals. Prioritize whole food sources and include alternatives for vegetarian, vegan, and gluten-free options. User preferences: breakfast: ${breakfast} | lunch: ${lunch} | dinner: ${dinner}. Keep it concise.`
-      });
+      }, { headers });
       console.log('[Client] /api/personalised-plans/nutrition response:', data);
       if(data && data.success){
         setContent(data.content);
@@ -42,7 +48,7 @@ const Nutrition = () => {
         setContent('');
       }
     }catch(error){
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
     setLoading(false);
   }

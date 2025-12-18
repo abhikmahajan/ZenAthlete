@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { createClient } from '@supabase/supabase-js';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
 
 // send cookies for cross-site auth
@@ -17,6 +17,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const Coach = ({ userId }) => {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const effectiveUserId = userId || user?.id;
 
   const [messages, setMessages] = useState([]);
@@ -24,10 +25,21 @@ const Coach = ({ userId }) => {
 
   useEffect(() => {
     if (!effectiveUserId) return;
-    axios.get(`/api/support/chat/${effectiveUserId}`)
-      .then(res => setMessages(res.data))
-      .catch(err => console.error("Failed to load chat:", err));
-  }, [effectiveUserId]);
+    const loadMessages = async () => {
+      try {
+        const token = await getToken();
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.get(`/api/support/chat/${effectiveUserId}`, { headers });
+        setMessages(res.data);
+      } catch (err) {
+        console.error("Failed to load chat:", err.response?.data || err.message);
+        toast.error("Failed to load chat");
+      }
+    };
+    loadMessages();
+  }, [effectiveUserId, getToken]);
 
   useEffect(() => {
     if (!effectiveUserId) return;
@@ -63,12 +75,17 @@ const Coach = ({ userId }) => {
   const sendMessage = async () => {
     if (!text || !effectiveUserId) return;
     try {
+      const token = await getToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
       await axios.post("/api/support/user", {
         userId: effectiveUserId,
         message: text
-      });
+      }, { headers });
+      toast.success("Message sent");
     } catch (err) {
-      toast.error("Failed to send user message:", err.message);
+      toast.error(err.response?.data?.message || "Failed to send message");
     }
     setText("");
   };

@@ -20,24 +20,31 @@ const Dashboard = () => {
 
 const getDashboardData = async () => {
     try {
+      const token = await getToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
       // Fetch creations
-      const creationsResponse = await axios.get('/api/user/creations')
+      const creationsResponse = await axios.get('/api/user/creations', { headers })
       if(creationsResponse.data.success){
         setCreations(creationsResponse.data.creations)
       }else{
         console.error('[Dashboard] Error fetching creations:', creationsResponse.data.message);
+        toast.error('Failed to fetch creations');
       }
 
       // Fetch workout stats
-      const statsResponse = await axios.get('/api/user/workout-stats')
+      const statsResponse = await axios.get('/api/user/workout-stats', { headers })
       if(statsResponse.data.success){
         setWorkoutStats(statsResponse.data.stats)
       }else{
         console.error('[Dashboard] Error fetching workout stats:', statsResponse.data.message);
+        toast.error('Failed to fetch workout stats');
       }
     } catch (error) {
-      console.error('[Dashboard] Error fetching data:', error);
-      toast.error(error.message)
+      console.error('[Dashboard] Error fetching data:', error.response?.data || error.message);
+      toast.error(error.response?.data?.message || 'Failed to load dashboard data')
     }
   }
 
