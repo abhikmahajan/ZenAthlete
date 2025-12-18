@@ -25,7 +25,6 @@ const getDashboardData = async () => {
       if(creationsResponse.data.success){
         setCreations(creationsResponse.data.creations)
       }else{
-        toast.error(creationsResponse.data.message)
         console.error('[Dashboard] Error fetching creations:', creationsResponse.data.message);
       }
 
@@ -34,7 +33,6 @@ const getDashboardData = async () => {
       if(statsResponse.data.success){
         setWorkoutStats(statsResponse.data.stats)
       }else{
-        toast.error(statsResponse.data.message)
         console.error('[Dashboard] Error fetching workout stats:', statsResponse.data.message);
       }
     } catch (error) {
