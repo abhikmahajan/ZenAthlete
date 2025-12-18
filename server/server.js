@@ -10,8 +10,9 @@ dotenv.config();
 
 
 const app = express();
-
-app.use(cors())
+  
+const CLIENT_URL = process.env.CLIENT_URL || 'https://zen-athlete.vercel.app' ;
+app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,10 @@ app.get('/', (req, res) => {
 app.use('/api/personalised-plans', requireAuth(), aiRouter);
 app.use('/api/user', requireAuth(), userRouter);
 app.use("/api/support",requireAuth(), supportRouter);
+
+app.listen(PORT, () => {
+    console.log('Server is running on port',PORT);
+})
 
 export default app;
 
