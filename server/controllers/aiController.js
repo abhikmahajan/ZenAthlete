@@ -20,7 +20,7 @@ export const personalPlans = async (req, res) =>{
 
 
   try{
-    const {userId} = req.auth();
+    const userId = req.auth.userId;
     const {prompt} = req.body;
     const plan = req.plan;
 
@@ -60,7 +60,7 @@ export const nutrition = async (req, res) =>{
 
 
   try{
-    const {userId} = req.auth();
+    const userId = req.auth.userId;
     const {prompt} = req.body;
     const plan = req.plan;
 

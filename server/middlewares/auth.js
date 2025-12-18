@@ -3,7 +3,8 @@ import { clerkClient } from "@clerk/express";
 
 export const auth = async (req, res, next) => {
     try {
-        const {userId , has} = await req.auth();
+        const userId = req.auth.userId;
+        const has = req.auth.has;
         const hasPremiumPlan = await has({plan: 'premium'});
         
         const user = await clerkClient.users.getUser(userId);

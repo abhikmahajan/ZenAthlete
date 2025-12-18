@@ -15,7 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export const userSendMessage = async (req, res) => {
   
   try{
-  const {userId} = req.auth();
+  const userId = req.auth.userId;
   const {message} = req.body;
   const plan = req.plan;
 
@@ -45,7 +45,7 @@ export const userSendMessage = async (req, res) => {
 
 // COACH sends message
 export const coachSendMessage = async (req, res) => {
-  const { userId} = req.auth();
+  const userId = req.auth.userId;
   const {message } = req.body;
 
   const { data, error } = await supabase
@@ -63,7 +63,7 @@ export const coachSendMessage = async (req, res) => {
 
 // Get all chat messages of a single user
 export const getUserChat = async (req, res) => {
-  const { userId } = req.auth();
+  const userId = req.auth.userId;
   const plan = req.plan;
 
     if(plan === 'free'){

@@ -11,7 +11,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 export const getUserCreations = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const userId = req.auth.userId;
         
     const { data, error } = await supabase
   .from('creations')
@@ -32,7 +32,7 @@ export const getUserCreations = async (req, res) => {
 
 export const completeWorkout = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const userId = req.auth.userId;
         const { workoutPlanName, totalCalories, duration } = req.body;
 
         if (!workoutPlanName || typeof totalCalories !== 'number') {
@@ -66,7 +66,7 @@ export const completeWorkout = async (req, res) => {
 
 export const getWorkoutStats = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const userId = req.auth.userId;
 
 
         // Fetch all workouts for this user and aggregate the data
