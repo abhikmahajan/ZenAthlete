@@ -12,6 +12,8 @@ axios.defaults.withCredentials = true;
 
 const PersonalPlans = () => {
   const { getToken } = useAuth();
+
+  const physiqueType = [
     'Lean & Athletic',
     'Aesthetic / Bodybuilder Lean',
     'Bulked & Strong Physique',
@@ -25,7 +27,7 @@ const PersonalPlans = () => {
   const [goalPhysique, setGoalPhysique] = useState("Lean & Athletic");
 
 
-  const submitted = async (e) =>{
+  
   const submitted = async (e) =>{
     e.preventDefault();
     setLoading(true);
@@ -48,6 +50,7 @@ const PersonalPlans = () => {
       toast.error(error.response?.data?.message || error.message);
     }
     setLoading(false);
+  }
 
   
   const [loading, setLoading] = useState(false);
@@ -146,5 +149,6 @@ const PersonalPlans = () => {
     </div>
   )
 }
+
 
 export default PersonalPlans
