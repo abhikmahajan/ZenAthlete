@@ -16,8 +16,7 @@ const PersonalPlans = () => {
   const physiqueType = [
     'Lean & Athletic',
     'Aesthetic / Bodybuilder Lean',
-    'Bulked & Strong Physique',
-
+    'Bulked & Strong Physique'
   ]
 
   const [age, setAge] = useState("");
